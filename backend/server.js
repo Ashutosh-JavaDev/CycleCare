@@ -84,14 +84,14 @@ app.use('/api/admin', adminRoutes);
 // Route aliases make the API accessible in environments that strip '/api'.
 app.use('/auth', authRoutes);
 
-app.use(express.static(frontendDistPath));
+// app.use(express.static(frontendDistPath));
 
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
-    return next();
-  }
-  return res.sendFile(path.join(frontendDistPath, 'index.html'));
-});
+// app.use((req, res, next) => {
+//   if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
+//     return next();
+//   }
+//   return res.sendFile(path.join(frontendDistPath, 'index.html'));
+// });
 
 app.use((err, _req, res, _next) => {
   console.error(err);
