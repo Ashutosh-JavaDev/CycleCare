@@ -1,0 +1,85 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  age INT NOT NULL,
+  cycle_length INT DEFAULT 28,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (email),
+  UNIQUE KEY uniq_users_id (id)
+);
+
+CREATE TABLE IF NOT EXISTS email_verifications (
+  email VARCHAR(100) PRIMARY KEY,
+  otp_hash VARCHAR(255) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  verified BOOLEAN DEFAULT FALSE,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS period_logs (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  cycle_length INT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS symptoms (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  date DATE NOT NULL,
+  symptom_type VARCHAR(100) NOT NULL,
+  pain_level INT,
+  notes TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS foods (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  food_name VARCHAR(120) NOT NULL,
+  description TEXT,
+  benefits TEXT,
+  category VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS medicines (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  medicine_name VARCHAR(120) NOT NULL,
+  usage TEXT,
+  recommended_dosage VARCHAR(120),
+  warning TEXT
+);
+
+CREATE TABLE IF NOT EXISTS hospitals (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  hospital_name VARCHAR(160) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  contact_number VARCHAR(30),
+  emergency_number VARCHAR(30),
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8)
+);
+
+CREATE TABLE IF NOT EXISTS posts (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  content TEXT NOT NULL,
+  anonymous BOOLEAN DEFAULT TRUE,
+  upvotes INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  post_id INT NOT NULL,
+  user_id INT NOT NULL,
+  comment TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
