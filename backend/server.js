@@ -23,10 +23,11 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'CycleCare API' });
 });
-
 app.get('/api/health/dependencies', async (_req, res) => {
   let db = false;
   let smtpConnected = false;
+
+  // Check if SMTP variables exist
   const smtpConfigured = Boolean(
     process.env.SMTP_HOST &&
     process.env.SMTP_PORT &&
@@ -34,30 +35,52 @@ app.get('/api/health/dependencies', async (_req, res) => {
     process.env.SMTP_PASS
   );
 
+  // Database connection test
   try {
     await pool.query('SELECT 1');
     db = true;
-  } catch {
+  } catch (error) {
     db = false;
+    console.error("Database check failed:", error.message); // Added logging
   }
 
   if (smtpConfigured) {
     try {
+
+      // FIX 1: Explicit transporter configuration for Gmail SMTP
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
-        secure: Number(process.env.SMTP_PORT) === 465,
+
+        // FIX 2: Gmail port 587 should NOT use secure:true
+        secure: false, 
+
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-        connectionTimeout: 8000,
-        greetingTimeout: 8000,
-        socketTimeout: 10000,
+
+        // FIX 3: Enable TLS to avoid Gmail rejection on cloud hosts
+        tls: {
+          rejectUnauthorized: false
+        },
+
+        // FIX 4: Increase timeouts slightly for cloud environments
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
       });
+
+      // Verify SMTP login
       await transporter.verify();
+
       smtpConnected = true;
-    } catch {
+
+    } catch (error) {
+
+      // FIX 5: Show real SMTP error in logs (important for debugging)
+      console.error("SMTP connection failed:", error.message);
+
       smtpConnected = false;
     }
   }
@@ -74,7 +97,6 @@ app.get('/api/health/dependencies', async (_req, res) => {
       : 'SMTP not configured.',
   });
 });
-
 app.use('/api/auth', authRoutes);
 app.use('/api/period', periodRoutes);
 app.use('/api/symptoms', symptomRoutes);
