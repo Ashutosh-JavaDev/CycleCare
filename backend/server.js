@@ -20,48 +20,38 @@ const frontendDistPath = path.resolve(__dirname, '../dist');
 
 app.use(cors());
 app.use(express.json());
-
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'CycleCare API' });
-});
 app.get('/api/health/dependencies', async (_req, res) => {
+
   let db = false;
   let smtpConnected = false;
 
-  // Check if SMTP variables exist
-  const smtpConfigured = Boolean(
-    process.env.SMTP_HOST &&
-    process.env.SMTP_PORT &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASS
-  );
+  // Check if Resend key exists
+  const smtpConfigured = Boolean(process.env.RESEND_API_KEY);
 
-  // Database connection test
   try {
     await pool.query('SELECT 1');
     db = true;
   } catch (error) {
     db = false;
-    console.error("Database check failed:", error.message); // Added logging
+    console.error("Database check failed:", error.message);
   }
 
   if (smtpConfigured) {
-   // Test Resend email service
-try {
-  await resend.emails.send({
-    from: "CycleCare <onboarding@resend.dev>",
-    to: process.env.SMTP_USER,
-    subject: "CycleCare Email Test",
-    html: "<p>Email service working</p>",
-  });
+    try {
 
-  smtpConnected = true;
+      await resend.emails.send({
+        from: "CycleCare <onboarding@resend.dev>",
+        to: process.env.SMTP_USER || "test@example.com",
+        subject: "CycleCare Email Test",
+        html: "<p>Email service working</p>",
+      });
 
-} catch (error) {
+      smtpConnected = true;
 
-  console.error("Email service failed:", error.message);
-  smtpConnected = false;
-}
+    } catch (error) {
+      console.error("Email service failed:", error.message);
+      smtpConnected = false;
+    }
   }
 
   res.json({
@@ -71,10 +61,11 @@ try {
     smtpConnected,
     message: smtpConfigured
       ? smtpConnected
-        ? 'SMTP ready.'
-        : 'SMTP configured but connection/auth failed.'
-      : 'SMTP not configured.',
+        ? 'Email service ready.'
+        : 'Email service failed.'
+      : 'Email service not configured.',
   });
+
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/period', periodRoutes);
