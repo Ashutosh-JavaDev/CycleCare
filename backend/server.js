@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import authRoutes from './routes/auth.js';
 import periodRoutes from './routes/periods.js';
 import symptomRoutes from './routes/symptoms.js';
@@ -14,6 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const app = express();
 const frontendDistPath = path.resolve(__dirname, '../dist');
 
@@ -45,42 +46,22 @@ app.get('/api/health/dependencies', async (_req, res) => {
   }
 
   if (smtpConfigured) {
-    try {
+   // Test Resend email service
+try {
+  await resend.emails.send({
+    from: "CycleCare <onboarding@resend.dev>",
+    to: process.env.SMTP_USER,
+    subject: "CycleCare Email Test",
+    html: "<p>Email service working</p>",
+  });
 
-      // FIX 1: Explicit transporter configuration for Gmail SMTP
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,   // smtp.gmail.com
-        port: 587,                     // correct port
-        secure: false,                 // STARTTLS
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      
-        // IMPORTANT: force IPv4
-        family: 4,
-      
-        tls: {
-          rejectUnauthorized: false
-        },
-      
-        connectionTimeout: 20000,
-        greetingTimeout: 20000,
-        socketTimeout: 20000,
-      });
+  smtpConnected = true;
 
-      // Verify SMTP login
-      await transporter.verify();
+} catch (error) {
 
-      smtpConnected = true;
-
-    } catch (error) {
-
-      // FIX 5: Show real SMTP error in logs (important for debugging)
-      console.error("SMTP connection failed:", error.message);
-
-      smtpConnected = false;
-    }
+  console.error("Email service failed:", error.message);
+  smtpConnected = false;
+}
   }
 
   res.json({
@@ -104,14 +85,6 @@ app.use('/api/admin', adminRoutes);
 // Route aliases make the API accessible in environments that strip '/api'.
 app.use('/auth', authRoutes);
 
-// app.use(express.static(frontendDistPath));
-
-// app.use((req, res, next) => {
-//   if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
-//     return next();
-//   }
-//   return res.sendFile(path.join(frontendDistPath, 'index.html'));
-// });
 
 app.use((err, _req, res, _next) => {
   console.error(err);
