@@ -51,7 +51,7 @@ app.get('/api/health/dependencies', async (_req, res) => {
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
-        secure: false, // port 587 uses STARTTLS
+        secure: true, // port 587 uses STARTTLS
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
