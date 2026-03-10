@@ -58,7 +58,7 @@ async function sendOtpEmail(email, otp) {
   try {
 
     const response = await resend.emails.send({
-      from: "CycleCare <onboarding@resend.dev>",   // test sender
+      from: "CycleCare <noreply@ashutoshworks.in>",   // test sender
       to: email,                                   // send to user email
       subject: "CycleCare Email Verification OTP",
       html: `
