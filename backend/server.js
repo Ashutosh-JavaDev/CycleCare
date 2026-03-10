@@ -49,15 +49,15 @@ app.get('/api/health/dependencies', async (_req, res) => {
 
       // FIX 1: Explicit transporter configuration for Gmail SMTP
       const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        secure: true, // port 587 uses STARTTLS
+        host: process.env.SMTP_HOST,   // smtp.gmail.com
+        port: 587,                     // correct port
+        secure: false,                 // STARTTLS
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
       
-        // Force IPv4 to avoid ENETUNREACH IPv6 routing errors
+        // IMPORTANT: force IPv4
         family: 4,
       
         tls: {
