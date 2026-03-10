@@ -55,28 +55,58 @@ async function sendOtpEmail(email, otp) {
     throw new Error("Email service is not configured on the server.");
   }
 
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;background:#f6f6f6;padding:30px">
+    <div style="max-width:500px;margin:auto;background:white;padding:30px;border-radius:8px">
+
+      <h2 style="color:#7c3aed;margin-bottom:20px;">CycleCare Verification</h2>
+
+      <p>Hello,</p>
+      <p>Your verification code for <b>CycleCare</b> is:</p>
+
+      <div style="
+        font-size:32px;
+        font-weight:bold;
+        letter-spacing:6px;
+        text-align:center;
+        margin:25px 0;
+        color:#111;">
+        ${otp}
+      </div>
+
+      <p>This code will expire in <b>10 minutes</b>.</p>
+
+      <hr style="margin:25px 0">
+
+      <p style="font-size:12px;color:#777;">
+        If you did not request this verification code, you can safely ignore this email.
+      </p>
+
+      <p style="font-size:12px;color:#777;">
+        © ${new Date().getFullYear()} CycleCare
+      </p>
+
+    </div>
+  </div>
+  `;
+
   try {
 
     const response = await resend.emails.send({
-      from: "CycleCare <noreply@ashutoshworks.in>",   // test sender
-      to: email,                                   // send to user email
-      subject: "CycleCare Email Verification OTP",
-      html: `
-        <h2>Your CycleCare OTP</h2>
-        <p>Your verification code is:</p>
-        <h1>${otp}</h1>
-        <p>This code expires in 10 minutes.</p>
-      `,
+      from: "CycleCare Security <auth@ashutoshworks.in>",
+      to: email,
+      subject: "Your CycleCare Verification Code",
+      reply_to: "support@ashutoshworks.in",
+      html
     });
 
-    console.log("Email sent:", response);
+    console.log("OTP email sent:", response);
 
   } catch (error) {
 
     console.error("Resend error:", error);
 
-    throw new Error("Failed to send email");
-
+    throw new Error("Failed to send verification email");
   }
 
   return { delivered: true };
