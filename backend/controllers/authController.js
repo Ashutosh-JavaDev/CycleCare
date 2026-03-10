@@ -55,21 +55,32 @@ async function sendOtpEmail(email, otp) {
     throw new Error("Email service is not configured on the server.");
   }
 
-  await resend.emails.send({
-    from: "CycleCare <onboarding@resend.dev>",
-    to: email,
-    subject: "CycleCare Email Verification OTP",
-    html: `
-      <h2>Your CycleCare OTP</h2>
-      <p>Your verification code is:</p>
-      <h1>${otp}</h1>
-      <p>This code expires in 10 minutes.</p>
-    `,
-  });
+  try {
+
+    const response = await resend.emails.send({
+      from: "CycleCare <onboarding@resend.dev>",   // test sender
+      to: email,                                   // send to user email
+      subject: "CycleCare Email Verification OTP",
+      html: `
+        <h2>Your CycleCare OTP</h2>
+        <p>Your verification code is:</p>
+        <h1>${otp}</h1>
+        <p>This code expires in 10 minutes.</p>
+      `,
+    });
+
+    console.log("Email sent:", response);
+
+  } catch (error) {
+
+    console.error("Resend error:", error);
+
+    throw new Error("Failed to send email");
+
+  }
 
   return { delivered: true };
 }
-
 /* ---------------- REGISTER ---------------- */
 
 export async function register(req, res) {
