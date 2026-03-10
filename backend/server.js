@@ -51,23 +51,21 @@ app.get('/api/health/dependencies', async (_req, res) => {
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
-
-        // FIX 2: Gmail port 587 should NOT use secure:true
-        secure: false, 
-
+        secure: false, // port 587 uses STARTTLS
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-
-        // FIX 3: Enable TLS to avoid Gmail rejection on cloud hosts
+      
+        // Force IPv4 to avoid ENETUNREACH IPv6 routing errors
+        family: 4,
+      
         tls: {
           rejectUnauthorized: false
         },
-
-        // FIX 4: Increase timeouts slightly for cloud environments
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
+      
+        connectionTimeout: 20000,
+        greetingTimeout: 20000,
         socketTimeout: 20000,
       });
 
