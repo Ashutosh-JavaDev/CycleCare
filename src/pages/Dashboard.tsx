@@ -322,7 +322,7 @@ export const Dashboard: React.FC = () => {
           <ul className="text-sm mt-2 space-y-1 text-purple-700/90 dark:text-purple-200">
             <li>Yoga: child pose and reclined twist for cramps.</li>
             <li>Breathing: 4-7-8 breathing for anxiety and pain perception.</li>
-            <li>Relaxation: warm bath and gentle stretching before sleep.</li>
+            <li>Relaxation: warm bath and gentle stretching before leep.</li>
           </ul>
         </div>
       </div>
