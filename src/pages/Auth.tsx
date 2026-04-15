@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../store/AppContext';
 import { Heart, Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react';
-import { getServiceStatus, sendSignupOtp, verifySignupOtp, type ServiceStatus } from '../api/client';
+import { sendSignupOtp, verifySignupOtp } from '../api/client';
 
 export const Login: React.FC = () => {
   const { login, setPage } = useApp();
@@ -104,35 +104,6 @@ export const Signup: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [serviceStatus, setServiceStatus] = useState<ServiceStatus | null>(null);
-  const [statusLoading, setStatusLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-
-    getServiceStatus()
-      .then((status) => {
-        if (mounted) setServiceStatus(status);
-      })
-      .catch(() => {
-        if (mounted) {
-          setServiceStatus({
-            api: false,
-            db: false,
-            smtpConfigured: false,
-            smtpConnected: false,
-            message: 'API not reachable. Check backend URL and server status.',
-          });
-        }
-      })
-      .finally(() => {
-        if (mounted) setStatusLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const handleSendOtp = async () => {
     if (!form.email) {
@@ -223,22 +194,6 @@ export const Signup: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="rounded-xl border border-pink-100 bg-pink-50/60 px-3 py-2 text-xs text-gray-600">
-              {statusLoading ? (
-                <p>Checking API and SMTP status...</p>
-              ) : (
-                <div className="space-y-1">
-                  <p>
-                    API: <span className={serviceStatus?.api ? 'text-green-600' : 'text-red-500'}>{serviceStatus?.api ? 'Connected' : 'Disconnected'}</span>
-                  </p>
-                  <p>
-                    SMTP: <span className={serviceStatus?.smtpConnected ? 'text-green-600' : 'text-amber-600'}>{serviceStatus?.smtpConnected ? 'Connected' : serviceStatus?.smtpConfigured ? 'Configured but not connected' : 'Not configured'}</span>
-                  </p>
-                  {serviceStatus?.message && <p className="text-gray-500">{serviceStatus.message}</p>}
-                </div>
-              )}
-            </div>
-
             {[
               { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Priya Sharma' },
               { label: 'Age', key: 'age', type: 'number', placeholder: '20' },
@@ -276,7 +231,7 @@ export const Signup: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSendOtp}
-                  disabled={otpLoading || !form.email || serviceStatus?.api === false}
+                  disabled={otpLoading || !form.email}
                   className="px-3 py-2 rounded-xl border border-pink-200 text-pink-600 text-sm font-semibold hover:bg-pink-50 disabled:opacity-60"
                 >
                   {otpLoading ? '...' : otpSent ? 'Resend' : 'Send OTP'}

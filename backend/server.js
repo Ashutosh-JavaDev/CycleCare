@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
-import { Resend } from 'resend';
 import authRoutes from './routes/auth.js';
 import periodRoutes from './routes/periods.js';
 import symptomRoutes from './routes/symptoms.js';
@@ -16,6 +15,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err.message);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+
 const app = express();
 
 app.use(cors());
@@ -23,44 +30,21 @@ app.use(express.json());
 
 app.get('/api/health/dependencies', async (_req, res) => {
   let db = false;
-  let smtpConnected = false;
-
   const smtpConfigured = Boolean(process.env.RESEND_API_KEY);
 
   try {
     await pool.query('SELECT 1');
     db = true;
   } catch (error) {
-    db = false;
     console.error("Database check failed:", error.message);
-  }
-
-  if (smtpConfigured) {
-    try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: "CycleCare <onboarding@resend.dev>",
-        to: process.env.SMTP_USER || "test@example.com",
-        subject: "CycleCare Email Test",
-        html: "<p>Email service working</p>",
-      });
-      smtpConnected = true;
-    } catch (error) {
-      console.error("Email service failed:", error.message);
-      smtpConnected = false;
-    }
   }
 
   res.json({
     api: true,
     db,
     smtpConfigured,
-    smtpConnected,
-    message: smtpConfigured
-      ? smtpConnected
-        ? 'Email service ready.'
-        : 'Email service failed.'
-      : 'Email service not configured.',
+    smtpConnected: smtpConfigured,
+    message: smtpConfigured ? 'Email service ready.' : 'Email service not configured.',
   });
 });
 
