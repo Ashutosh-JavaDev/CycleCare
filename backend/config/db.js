@@ -17,6 +17,10 @@ export const pool = new Pool({
     : false,
 });
 
+pool.on('error', (err) => {
+  console.error('Database pool error (idle client):', err.message);
+});
+
 export async function initializeDatabase() {
   try {
     await pool.query(`
