@@ -75,7 +75,7 @@ const port = Number(process.env.PORT || 4000);
 async function startServer() {
   try {
     await initializeDatabase();
-    app.listen(port, 'localhost', () => {
+    app.listen(port, '0.0.0.0', () => {
       console.log(`CycleCare API listening on port ${port}`);
     });
   } catch (error) {
