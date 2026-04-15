@@ -11,7 +11,12 @@ import {
   upsertEmailVerification,
 } from "../models/userModel.js";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("Email service is not configured on the server.");
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
@@ -91,7 +96,7 @@ async function sendOtpEmail(email, otp) {
   `;
 
   try {
-
+    const resend = getResend();
     const response = await resend.emails.send({
       from: "CycleCare Security <auth@ashutoshworks.in>",
       to: email,

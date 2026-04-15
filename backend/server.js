@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 import { Resend } from 'resend';
 import authRoutes from './routes/auth.js';
 import periodRoutes from './routes/periods.js';
@@ -10,22 +11,20 @@ import symptomRoutes from './routes/symptoms.js';
 import postRoutes from './routes/posts.js';
 import adminRoutes from './routes/admin.js';
 import { initializeDatabase, pool } from './config/db.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const app = express();
-const frontendDistPath = path.resolve(__dirname, '../dist');
 
 app.use(cors());
 app.use(express.json());
-app.get('/api/health/dependencies', async (_req, res) => {
 
+app.get('/api/health/dependencies', async (_req, res) => {
   let db = false;
   let smtpConnected = false;
 
-  // Check if Resend key exists
   const smtpConfigured = Boolean(process.env.RESEND_API_KEY);
 
   try {
@@ -38,16 +37,14 @@ app.get('/api/health/dependencies', async (_req, res) => {
 
   if (smtpConfigured) {
     try {
-
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "CycleCare <onboarding@resend.dev>",
         to: process.env.SMTP_USER || "test@example.com",
         subject: "CycleCare Email Test",
         html: "<p>Email service working</p>",
       });
-
       smtpConnected = true;
-
     } catch (error) {
       console.error("Email service failed:", error.message);
       smtpConnected = false;
@@ -65,17 +62,24 @@ app.get('/api/health/dependencies', async (_req, res) => {
         : 'Email service failed.'
       : 'Email service not configured.',
   });
-
 });
+
 app.use('/api/auth', authRoutes);
 app.use('/api/period', periodRoutes);
 app.use('/api/symptoms', symptomRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Route aliases make the API accessible in environments that strip '/api'.
 app.use('/auth', authRoutes);
 
+// Serve built frontend in production
+const frontendDistPath = path.resolve(__dirname, '../dist');
+if (existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
 
 app.use((err, _req, res, _next) => {
   console.error(err);
@@ -87,7 +91,7 @@ const port = Number(process.env.PORT || 4000);
 async function startServer() {
   try {
     await initializeDatabase();
-    app.listen(port, () => {
+    app.listen(port, 'localhost', () => {
       console.log(`CycleCare API listening on port ${port}`);
     });
   } catch (error) {
