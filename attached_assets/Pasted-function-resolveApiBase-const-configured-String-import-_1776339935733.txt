@@ -1,0 +1,99 @@
+function resolveApiBase() {
+  const configured = String(import.meta.env.VITE_API_URL || '').trim();
+  if (configured) {
+    return configured.replace(/\/$/, '').replace(/\/api$/, '') + '/api';
+}
+return '/api';
+
+type RequestOptions = {
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  body?: unknown;
+  token?: string;
+};
+
+async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      method: options.method || 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+      },
+      ...(options.body ? { body: JSON.stringify(options.body) } : {}),
+    });
+  } catch {
+    throw new Error('Failed to reach API. Check backend/server status.');
+  }
+
+  const rawText = await response.text();
+  let data: Record<string, unknown> = {};
+  if (rawText) {
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      data = { message: rawText };
+    }
+  }
+
+  if (!response.ok) {
+    const message = typeof data.message === 'string' && data.message.trim().length > 0
+      ? data.message
+      : `Request failed (${response.status}) for ${path}`;
+    throw new Error(message);
+  }
+
+  return data as T;
+}
+
+export type AuthUser = {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  cycle_length: number;
+};
+
+export type AuthResponse = {
+  token: string;
+  user: AuthUser;
+};
+
+export function registerUser(payload: {
+  name: string;
+  email: string;
+  password: string;
+  age: number;
+  cycleLength?: number;
+}) {
+  return apiRequest<AuthResponse>('/auth/register', { method: 'POST', body: payload });
+}
+
+export function loginUser(payload: { email: string; password: string }) {
+  return apiRequest<AuthResponse>('/auth/login', { method: 'POST', body: payload });
+}
+
+export function fetchCurrentUser(token: string) {
+  return apiRequest<{ user: AuthUser }>('/auth/me', { token });
+}
+
+export function sendSignupOtp(payload: { email: string }) {
+  return apiRequest<{ message: string; devOtp?: string }>('/auth/send-otp', { method: 'POST', body: payload });
+}
+
+export function verifySignupOtp(payload: { email: string; otp: string }) {
+  return apiRequest<{ message: string; verified: boolean }>('/auth/verify-otp', { method: 'POST', body: payload });
+}
+
+export type ServiceStatus = {
+  api: boolean;
+  db: boolean;
+  smtpConfigured: boolean;
+  smtpConnected: boolean;
+  message?: string;
+};
+
+export function getServiceStatus() {
+  return apiRequest<ServiceStatus>('/health/dependencies');
+}
