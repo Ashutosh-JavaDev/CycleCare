@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../store/AppContext';
+import { ThemeToggle } from '../components/ThemeToggle';
 import {
   Heart, Eye, EyeOff, ArrowLeft, CheckCircle, Sparkles, Shield, Lock, BookOpen, Bot,
 } from 'lucide-react';
@@ -47,7 +48,7 @@ const BrandPanel: React.FC<{ subtitle: string }> = ({ subtitle }) => (
 const PageWrap: React.FC<{ subtitle: string; children: React.ReactNode }> = ({ subtitle, children }) => {
   const { setPage } = useApp();
   return (
-    <div className="min-h-screen bg-mesh flex">
+    <div className="min-h-screen bg-mesh dark:bg-mesh-dark flex">
       <BrandPanel subtitle={subtitle} />
 
       {/* Right form panel */}
@@ -55,6 +56,11 @@ const PageWrap: React.FC<{ subtitle: string; children: React.ReactNode }> = ({ s
         {/* mobile blobs */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-pink-300/30 rounded-full blur-3xl lg:hidden" />
         <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-300/30 rounded-full blur-3xl lg:hidden" />
+
+        {/* Floating dark-mode toggle */}
+        <div className="absolute top-5 right-5 z-10">
+          <ThemeToggle variant="icon" />
+        </div>
 
         <div className="w-full max-w-md relative animate-fadeIn">
           <button

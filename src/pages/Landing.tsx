@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../store/AppContext';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { ThemeToggle } from '../components/ThemeToggle';
 import {
   Heart, Calendar, Activity, BookOpen, Bot, Users,
   ArrowRight, Star, Shield, ChevronDown, Sparkles,
@@ -68,7 +69,8 @@ export const Landing: React.FC = () => {
             <a href="#testimonials" className="hover:text-pink-600 transition-colors">Reviews</a>
             <a href="#trust"        className="hover:text-pink-600 transition-colors">Privacy</a>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
             <button onClick={() => setPage('login')}  className="btn-ghost">Login</button>
             <button onClick={() => setPage('signup')} className="btn-primary px-4 py-2 text-sm">Get Started</button>
           </div>

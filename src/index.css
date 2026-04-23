@@ -2,30 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============== TYPOGRAPHY & BASE ============== */
+/* =================================================================
+   GLOBAL THEME VARIABLES — Light + Dark
+================================================================= */
+:root,
+[data-theme='light'] {
+  --bg-color:     #ffffff;
+  --bg-soft:      #faf6ff;
+  --text-color:   #1a1a1a;
+  --text-muted:   #525b78;
+  --card-bg:      #ffffff;
+  --card-bg-soft: #faf6ff;
+  --border:       #ffe1ed;
+  --border-soft:  #ececf6;
+  --accent:       #ec4899;
+  --accent-soft:  #ffe1ed;
+  --shadow-color: 236, 72, 153; /* rgba base */
+}
+
+.dark,
+[data-theme='dark'] {
+  --bg-color:     #0f172a;     /* deep navy */
+  --bg-soft:      #161034;
+  --text-color:   #e5e7eb;     /* light gray */
+  --text-muted:   #a9b1c8;
+  --card-bg:      #1e293b;     /* slate-800 */
+  --card-bg-soft: #1a1f3a;
+  --border:       #2a3148;
+  --border-soft:  #1f2440;
+  --accent:       #ff6fae;     /* slightly brighter pink */
+  --accent-soft:  rgba(236,72,153,0.18);
+  --shadow-color: 167, 139, 250;
+  color-scheme: dark;
+}
+
+/* =================================================================
+   TYPOGRAPHY & BASE
+================================================================= */
 html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'cv11','ss01','ss02';
   background: linear-gradient(135deg, #fff5fa 0%, #faf6ff 50%, #fff2f8 100%);
   min-height: 100vh;
-  color: #2a3148;
+  color: var(--text-color);
 }
 .dark body {
   background: linear-gradient(135deg, #0b0f24 0%, #161034 50%, #1a0f28 100%);
-  color: #e7eaf6;
+  color: var(--text-color);
 }
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   letter-spacing: -0.018em;
 }
 
-:root {
-  --pink: #ec4899;
-  --lavender: #a78bfa;
+/* =================================================================
+   SMOOTH GLOBAL THEME TRANSITION
+   Applied only to color-related properties so it doesn't slow other animations.
+================================================================= */
+.theme-transition,
+.theme-transition * {
+  transition-property: background-color, color, border-color, fill, stroke, box-shadow;
+  transition-duration: 280ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
+/* Don't transition on initial load (avoids flash of slow paint) */
+.preload * { transition: none !important; }
 
-/* ============== SCROLLBAR ============== */
+/* =================================================================
+   SCROLLBAR
+================================================================= */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -34,13 +80,19 @@ h1, h2, h3, h4, h5, h6, .font-display {
   border: 2px solid transparent;
   background-clip: padding-box;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ec4899, #8b46f3);
+  background-clip: padding-box;
+}
 ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #ec4899, #8b46f3); background-clip: padding-box; }
 
 /* Selection */
 ::selection { background: rgba(236,72,153,0.22); color: #4a0a2b; }
 .dark ::selection { background: rgba(167,139,250,0.30); color: #fff; }
 
-/* ============== UTILITIES & COMPONENTS ============== */
+/* =================================================================
+   COMPONENTS
+================================================================= */
 @layer components {
   .gradient-text {
     background: linear-gradient(135deg, #ec4899 0%, #a26bff 50%, #ec4899 100%);
@@ -59,7 +111,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
     border: 1px solid rgba(255,255,255,0.55);
   }
   .dark .glass {
-    background: rgba(22,16,52,0.55);
+    background: rgba(30,41,59,0.65);
     border: 1px solid rgba(255,255,255,0.06);
   }
 
@@ -68,12 +120,13 @@ h1, h2, h3, h4, h5, h6, .font-display {
   }
   .dark .card { @apply bg-slate-900 border-slate-800; }
 
-  .card-hover {
-    @apply transition-all duration-300;
-  }
+  .card-hover { @apply transition-all duration-300; }
   .card-hover:hover {
     transform: translateY(-4px);
     box-shadow: 0 22px 48px -20px rgba(236, 72, 153, 0.32);
+  }
+  .dark .card-hover:hover {
+    box-shadow: 0 22px 48px -20px rgba(167, 139, 250, 0.45);
   }
 
   .btn {
@@ -89,12 +142,15 @@ h1, h2, h3, h4, h5, h6, .font-display {
     box-shadow: 0 12px 28px -12px rgba(236,72,153,0.55);
   }
   .btn-primary:hover { background-position: 100% 0; box-shadow: 0 18px 36px -10px rgba(236,72,153,0.55); transform: translateY(-1px); }
+  .dark .btn-primary { box-shadow: 0 12px 28px -12px rgba(236,72,153,0.7); }
+  .dark .btn-primary:hover { box-shadow: 0 18px 36px -10px rgba(167,139,250,0.6); }
 
   .btn-secondary {
     @apply btn px-5 py-3 bg-white text-pink-600 border border-pink-200;
   }
   .btn-secondary:hover { @apply bg-pink-50; transform: translateY(-1px); }
-  .dark .btn-secondary { @apply bg-slate-900 text-pink-300 border-slate-700; }
+  .dark .btn-secondary { @apply bg-slate-800 text-pink-300 border-slate-700; }
+  .dark .btn-secondary:hover { @apply bg-slate-700; }
 
   .btn-ghost {
     @apply btn px-4 py-2 text-ink-500 hover:text-pink-600 hover:bg-pink-50/70;
@@ -126,7 +182,85 @@ h1, h2, h3, h4, h5, h6, .font-display {
   }
 }
 
-/* ============== ANIMATIONS ============== */
+/* =================================================================
+   DARK-MODE SAFETY NET — auto-translate hardcoded light colors
+   so untouched pages still respect dark mode.
+================================================================= */
+.dark .bg-white                   { background-color: #1e293b !important; }
+.dark .bg-white\/40,
+.dark .bg-white\/60,
+.dark .bg-white\/70,
+.dark .bg-white\/80,
+.dark .bg-white\/85,
+.dark .bg-white\/90               { background-color: rgba(30,41,59,0.75) !important; }
+
+.dark .bg-gray-50,
+.dark .bg-slate-50                { background-color: #1a1f3a !important; }
+.dark .bg-gray-100,
+.dark .bg-slate-100               { background-color: #1e293b !important; }
+
+.dark .bg-pink-50                 { background-color: rgba(236,72,153,0.10) !important; }
+.dark .bg-pink-50\/50,
+.dark .bg-pink-50\/70,
+.dark .bg-pink-50\/80             { background-color: rgba(236,72,153,0.08) !important; }
+.dark .bg-pink-100                { background-color: rgba(236,72,153,0.18) !important; }
+.dark .bg-purple-50               { background-color: rgba(139,70,243,0.10) !important; }
+.dark .bg-purple-100              { background-color: rgba(139,70,243,0.18) !important; }
+
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900,
+.dark .text-slate-700,
+.dark .text-slate-800,
+.dark .text-slate-900             { color: #e7eaf6 !important; }
+
+.dark .text-gray-500,
+.dark .text-gray-600,
+.dark .text-slate-500,
+.dark .text-slate-600             { color: #c0c6dd !important; }
+
+.dark .text-gray-300,
+.dark .text-gray-400,
+.dark .text-slate-300,
+.dark .text-slate-400             { color: #8a93b0 !important; }
+
+/* Pink labels stay readable on dark */
+.dark .text-pink-500,
+.dark .text-pink-600              { color: #ff97c0 !important; }
+.dark .text-purple-500,
+.dark .text-purple-600,
+.dark .text-purple-700            { color: #c8a8ff !important; }
+
+/* Borders */
+.dark .border-pink-100,
+.dark .border-pink-200            { border-color: rgba(236,72,153,0.22) !important; }
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-slate-100,
+.dark .border-slate-200           { border-color: #2a3148 !important; }
+.dark .divide-gray-50 > * + *,
+.dark .divide-gray-100 > * + *    { border-color: #2a3148 !important; }
+
+/* Form elements that don't already have a .input class */
+.dark input:not(.input):not([type='range']):not([type='checkbox']):not([type='radio']),
+.dark textarea,
+.dark select {
+  background-color: rgba(30,41,59,0.7);
+  color: #e7eaf6;
+  border-color: #2a3148;
+}
+.dark input:not(.input):not([type='range']):not([type='checkbox']):not([type='radio'])::placeholder,
+.dark textarea::placeholder { color: #7a83a0; }
+
+/* Soft red/amber/emerald cards keep contrast */
+.dark .bg-red-50                  { background-color: rgba(248,113,113,0.10) !important; }
+.dark .bg-amber-50                { background-color: rgba(245,158,11,0.10) !important; }
+.dark .bg-emerald-50              { background-color: rgba(16,185,129,0.10) !important; }
+.dark .bg-rose-50                 { background-color: rgba(244,63,94,0.10) !important; }
+
+/* =================================================================
+   ANIMATIONS
+================================================================= */
 .animate-fadeIn { animation: fadeIn 0.5s ease forwards; }
 .animate-float  { animation: float 4s ease-in-out infinite; }
 .animate-pulse-soft { animation: pulseSoft 2.4s ease-in-out infinite; }
@@ -140,7 +274,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
 @keyframes shimmer  { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(20px,-30px) scale(1.06); } }
 
-/* Scroll reveal — elements with .reveal start hidden, become visible when .is-visible */
+/* Scroll reveal */
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1); }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: 0.08s; }
@@ -148,7 +282,9 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .reveal-delay-3 { transition-delay: 0.24s; }
 .reveal-delay-4 { transition-delay: 0.32s; }
 
-/* ============== CHAT BUBBLES ============== */
+/* =================================================================
+   CHAT BUBBLES
+================================================================= */
 .chat-bubble-user {
   background: linear-gradient(135deg, #ec4899, #ff6fae);
   color: white;
@@ -162,7 +298,9 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 .dark .chat-bubble-ai { background: linear-gradient(135deg, #1f1740, #2a1438); border-color: #3a2160; color: #f1ecff; }
 
-/* ============== CALENDAR ============== */
+/* =================================================================
+   CALENDAR
+================================================================= */
 .cal-day {
   width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
@@ -173,11 +311,14 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .dark .cal-day:hover { background: rgba(236,72,153,0.18); }
 .cal-day.period { background: linear-gradient(135deg,#ec4899,#ff6fae); color: white; box-shadow: 0 6px 14px -6px rgba(236,72,153,0.55); }
 .cal-day.predicted { background: #ffe1ed; color: #ec4899; border: 2px dashed #ec4899; }
+.dark .cal-day.predicted { background: rgba(236,72,153,0.20); }
 .cal-day.ovulation { background: #dbeafe; color: #2563eb; }
 .dark .cal-day.ovulation { background: rgba(37,99,235,0.25); color: #93c5fd; }
 .cal-day.today { font-weight: 700; outline: 2px solid #ec4899; outline-offset: 1px; }
 
-/* ============== SIDEBAR NAV ============== */
+/* =================================================================
+   SIDEBAR NAV
+================================================================= */
 .nav-active {
   background: linear-gradient(135deg, rgba(236,72,153,0.12), rgba(139,70,243,0.12));
   color: #ec4899;
@@ -186,12 +327,16 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 .dark .nav-active { color: #ff97c0; border-right-color: #ff97c0; background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(139,70,243,0.18)); }
 
-/* ============== TOGGLES ============== */
+/* =================================================================
+   TOGGLES
+================================================================= */
 .toggle-on  { background: linear-gradient(135deg,#ec4899,#8b46f3); }
 .toggle-off { background: #e2e8f0; }
 .dark .toggle-off { background: #334155; }
 
-/* ============== RANGE SLIDER ============== */
+/* =================================================================
+   RANGE SLIDER
+================================================================= */
 input[type='range'] {
   -webkit-appearance: none;
   height: 6px;
@@ -211,14 +356,18 @@ input[type='range']::-webkit-slider-thumb {
 }
 input[type='range']::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
-/* ============== FOCUS RING ============== */
+/* =================================================================
+   FOCUS RING
+================================================================= */
 :focus-visible { outline: none; }
 button:focus-visible, a:focus-visible {
   box-shadow: 0 0 0 3px rgba(236,72,153,0.30);
   border-radius: 12px;
 }
 
-/* ============== REDUCED MOTION ============== */
+/* =================================================================
+   REDUCED MOTION
+================================================================= */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

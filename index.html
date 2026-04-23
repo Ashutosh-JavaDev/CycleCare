@@ -10,6 +10,24 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      // Apply persisted theme before paint to avoid flash of wrong theme
+      (function () {
+        try {
+          var saved = localStorage.getItem('cyclecare-theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = saved ? saved === 'dark' : prefersDark;
+          var root = document.documentElement;
+          if (dark) { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); root.style.colorScheme = 'dark'; }
+          else { root.setAttribute('data-theme', 'light'); root.style.colorScheme = 'light'; }
+          // Disable transitions during initial paint, then re-enable
+          root.classList.add('preload');
+          window.addEventListener('load', function () {
+            requestAnimationFrame(function () { root.classList.remove('preload'); });
+          });
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

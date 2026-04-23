@@ -19,7 +19,7 @@ import { PrivacyPage } from './pages/Privacy';
 import { HelpPage } from './pages/Help';
 import "./index.css";
 function AppShell() {
-  const { currentPage, isLoggedIn, darkMode } = useApp();
+  const { currentPage, isLoggedIn } = useApp();
 
   const publicPage = currentPage === 'landing'
     ? <Landing />
@@ -65,17 +65,15 @@ function AppShell() {
   })();
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-mesh text-ink-700 transition-colors duration-300 dark:bg-mesh-dark dark:text-ink-50">
-        {!isLoggedIn ? (
-          publicPage
-        ) : (
-          <div className="min-h-screen">
-            <Sidebar />
-            <main className="pt-16 lg:pt-0 lg:ml-64">{appPage}</main>
-          </div>
-        )}
-      </div>
+    <div className="min-h-screen bg-mesh text-ink-700 dark:bg-mesh-dark dark:text-ink-50 theme-transition">
+      {!isLoggedIn ? (
+        publicPage
+      ) : (
+        <div className="min-h-screen">
+          <Sidebar />
+          <main className="pt-16 lg:pt-0 lg:ml-64">{appPage}</main>
+        </div>
+      )}
     </div>
   );
 }

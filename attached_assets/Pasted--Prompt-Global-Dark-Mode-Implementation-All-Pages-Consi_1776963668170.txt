@@ -1,0 +1,101 @@
+🌙 Prompt: Global Dark Mode Implementation (All Pages Consistent)
+
+Prompt:
+
+Enhance my website by implementing a global Dark Mode system that works consistently across all pages, components, and sections.
+
+🌗 1. Dark Mode Toggle Button
+Add a Dark Mode toggle button in the navbar (top-right corner)
+Use a modern switch or icon-based toggle (🌙 / ☀️)
+Add smooth animation when toggling (fade or transition effect)
+Ensure the toggle state is persistent using localStorage
+🎨 2. Global Theme System (Critical)
+
+Implement a centralized theme system using CSS variables:
+
+Light Theme (default):
+Background: #ffffff
+Text: #1a1a1a
+Cards: #f9f9f9
+Accent: soft green/blue
+Dark Theme:
+Background: #0f172a (deep navy/dark)
+Text: #e5e7eb (light gray)
+Cards: #1e293b
+Accent: slightly brighter version of primary color
+
+Use:
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1a1a1a;
+  --card-bg: #f9f9f9;
+}
+
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --text-color: #e5e7eb;
+  --card-bg: #1e293b;
+}
+
+Apply these variables globally across all pages.
+
+🧱 3. Apply Theme to All Elements
+
+Ensure dark mode affects:
+
+Body background
+All text (headings, paragraphs, links)
+Cards and sections
+Navbar and footer
+Buttons and hover states
+Forms and input fields
+Icons and borders
+
+Avoid hardcoded colors—replace everything with CSS variables.
+
+✨ 4. Smooth Transition Effects
+Add global transition:
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+Ensure switching feels smooth, not abrupt
+🔗 5. Multi-Page Consistency
+Dark mode should apply across all pages of the website
+Store user preference in localStorage
+On page load, automatically apply saved theme
+
+Example logic:
+
+const toggle = document.getElementById("theme-toggle");
+
+toggle.addEventListener("click", () => {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", newTheme);
+  localStorage.setItem("theme", newTheme);
+});
+
+// On load
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) {
+  document.documentElement.setAttribute("data-theme", savedTheme);
+}
+🧩 6. UI/UX Enhancements
+Adjust images/icons for dark mode (invert or use alternate assets if needed)
+Ensure contrast and readability (no dull gray-on-gray text)
+Buttons should remain clearly visible in both modes
+Add subtle glow/hover effects in dark mode
+📱 7. Responsiveness & Accessibility
+Ensure toggle works on all screen sizes
+Maintain WCAG contrast standards
+Make toggle easily accessible (not hidden in menus)
+📌 8. Output Requirements
+Provide:
+Full CSS variable system
+Toggle button UI
+JavaScript logic
+Example of applying styles to components (cards, navbar, text)
+⚠️ Important Instruction:
+
+Do not implement dark mode partially. It must be fully consistent across all pages, components, and UI elements, with no leftover light-theme colors.

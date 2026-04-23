@@ -142,8 +142,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [periodLogs, setPeriodLogs] = useState<PeriodLog[]>(SAMPLE_PERIODS);
   const [symptomLogs, setSymptomLogs] = useState<SymptomLog[]>(SAMPLE_SYMPTOMS);
   const [posts, setPosts] = useState<Post[]>(SAMPLE_POSTS);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('cyclecare-theme') === 'dark');
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('cyclecare-theme');
+    if (saved) return saved === 'dark';
+    // Fall back to system preference on first visit
+    return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  // Apply theme to <html> so it cascades across every page + CSS variables
   useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
+      root.style.colorScheme = 'light';
+    }
     localStorage.setItem('cyclecare-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
