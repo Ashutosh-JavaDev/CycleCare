@@ -17,20 +17,20 @@
   --border-soft:  #ececf6;
   --accent:       #ec4899;
   --accent-soft:  #ffe1ed;
-  --shadow-color: 236, 72, 153; /* rgba base */
+  --shadow-color: 236, 72, 153;
 }
 
 .dark,
 [data-theme='dark'] {
-  --bg-color:     #0f172a;     /* deep navy */
+  --bg-color:     #0f172a;
   --bg-soft:      #161034;
-  --text-color:   #e5e7eb;     /* light gray */
+  --text-color:   #e5e7eb;
   --text-muted:   #a9b1c8;
-  --card-bg:      #1e293b;     /* slate-800 */
+  --card-bg:      #1e293b;
   --card-bg-soft: #1a1f3a;
   --border:       #2a3148;
   --border-soft:  #1f2440;
-  --accent:       #ff6fae;     /* slightly brighter pink */
+  --accent:       #ff6fae;
   --accent-soft:  rgba(236,72,153,0.18);
   --shadow-color: 167, 139, 250;
   color-scheme: dark;
@@ -58,7 +58,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
 /* =================================================================
    SMOOTH GLOBAL THEME TRANSITION
-   Applied only to color-related properties so it doesn't slow other animations.
 ================================================================= */
 .theme-transition,
 .theme-transition * {
@@ -66,7 +65,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
   transition-duration: 280ms;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* Don't transition on initial load (avoids flash of slow paint) */
 .preload * { transition: none !important; }
 
 /* =================================================================
@@ -86,7 +84,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #ec4899, #8b46f3); background-clip: padding-box; }
 
-/* Selection */
 ::selection { background: rgba(236,72,153,0.22); color: #4a0a2b; }
 .dark ::selection { background: rgba(167,139,250,0.30); color: #fff; }
 
@@ -184,7 +181,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
 /* =================================================================
    DARK-MODE SAFETY NET — auto-translate hardcoded light colors
-   so untouched pages still respect dark mode.
 ================================================================= */
 .dark .bg-white                   { background-color: #1e293b !important; }
 .dark .bg-white\/40,
@@ -224,14 +220,12 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .dark .text-slate-300,
 .dark .text-slate-400             { color: #8a93b0 !important; }
 
-/* Pink labels stay readable on dark */
 .dark .text-pink-500,
 .dark .text-pink-600              { color: #ff97c0 !important; }
 .dark .text-purple-500,
 .dark .text-purple-600,
 .dark .text-purple-700            { color: #c8a8ff !important; }
 
-/* Borders */
 .dark .border-pink-100,
 .dark .border-pink-200            { border-color: rgba(236,72,153,0.22) !important; }
 .dark .border-gray-100,
@@ -241,7 +235,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .dark .divide-gray-50 > * + *,
 .dark .divide-gray-100 > * + *    { border-color: #2a3148 !important; }
 
-/* Form elements that don't already have a .input class */
 .dark input:not(.input):not([type='range']):not([type='checkbox']):not([type='radio']),
 .dark textarea,
 .dark select {
@@ -252,7 +245,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .dark input:not(.input):not([type='range']):not([type='checkbox']):not([type='radio'])::placeholder,
 .dark textarea::placeholder { color: #7a83a0; }
 
-/* Soft red/amber/emerald cards keep contrast */
 .dark .bg-red-50                  { background-color: rgba(248,113,113,0.10) !important; }
 .dark .bg-amber-50                { background-color: rgba(245,158,11,0.10) !important; }
 .dark .bg-emerald-50              { background-color: rgba(16,185,129,0.10) !important; }
@@ -274,7 +266,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
 @keyframes shimmer  { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(20px,-30px) scale(1.06); } }
 
-/* Scroll reveal */
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1); }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: 0.08s; }
