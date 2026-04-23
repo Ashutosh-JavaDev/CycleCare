@@ -66,7 +66,7 @@ function AppShell() {
 
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,111,174,0.14),_transparent_35%),linear-gradient(135deg,_#fff5fa_0%,_#faf6ff_48%,_#fff2f8_100%)] text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+      <div className="min-h-screen bg-mesh text-ink-700 transition-colors duration-300 dark:bg-mesh-dark dark:text-ink-50">
         {!isLoggedIn ? (
           publicPage
         ) : (
