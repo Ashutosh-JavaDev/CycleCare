@@ -148,7 +148,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // Fall back to system preference on first visit
     return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
-
+  
   // Apply theme to <html> so it cascades across every page + CSS variables
   useEffect(() => {
     const root = document.documentElement;
