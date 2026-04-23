@@ -18,6 +18,7 @@ import { SettingsPage } from './pages/Settings';
 import { PrivacyPage } from './pages/Privacy';
 import { HelpPage } from './pages/Help';
 import "./index.css";
+
 function AppShell() {
   const { currentPage, isLoggedIn } = useApp();
 
@@ -29,38 +30,22 @@ function AppShell() {
 
   const appPage = (() => {
     switch (currentPage) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'tracker':
-        return <Tracker />;
-      case 'symptoms':
-        return <Symptoms />;
-      case 'calendar':
-        return <CycleCalendar />;
-      case 'education':
-        return <Education />;
-      case 'ai':
-        return <AIAssistant />;
-      case 'forum':
-        return <Forum />;
-      case 'profile':
-        return <Profile />;
-      case 'medicines':
-        return <MedicineGuide />;
-      case 'foods':
-        return <ReliefFoods />;
-      case 'hospitals':
-        return <Hospitals />;
-      case 'settings':
-        return <SettingsPage />;
-      case 'privacy':
-        return <PrivacyPage />;
-      case 'help':
-        return <HelpPage />;
-      case 'admin':
-        return <AdminDashboard />;
-      default:
-        return <Dashboard />;
+      case 'dashboard':  return <Dashboard />;
+      case 'tracker':    return <Tracker />;
+      case 'symptoms':   return <Symptoms />;
+      case 'calendar':   return <CycleCalendar />;
+      case 'education':  return <Education />;
+      case 'ai':         return <AIAssistant />;
+      case 'forum':      return <Forum />;
+      case 'profile':    return <Profile />;
+      case 'medicines':  return <MedicineGuide />;
+      case 'foods':      return <ReliefFoods />;
+      case 'hospitals':  return <Hospitals />;
+      case 'settings':   return <SettingsPage />;
+      case 'privacy':    return <PrivacyPage />;
+      case 'help':       return <HelpPage />;
+      case 'admin':      return <AdminDashboard />;
+      default:           return <Dashboard />;
     }
   })();
 
